@@ -91,19 +91,19 @@
   --sidebar: 222 47% 11%;
   --sidebar-foreground: 0 0% 100%;
   --sidebar-border: 215 28% 17%;
-  --sidebar-primary: 258 90% 66%;
-  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-primary: 73 88% 59%;
+  --sidebar-primary-foreground: 0 0% 7%;
   --sidebar-accent: 215 28% 17%;
   --sidebar-accent-foreground: 0 0% 100%;
-  --sidebar-ring: 258 90% 66%;
+  --sidebar-ring: 73 88% 59%;
 
   --popover: 0 0% 100%;
   --popover-foreground: 222 47% 11%;
   --popover-border: 214 32% 91%;
 
-  /* Vivid purple accent #7C3AED */
-  --primary: 258 90% 66%;
-  --primary-foreground: 0 0% 100%;
+  /* Brand lime #CCF33C */
+  --primary: 73 88% 59%;
+  --primary-foreground: 0 0% 7%;
 
   --secondary: 215 28% 17%;
   --secondary-foreground: 0 0% 100%;
@@ -111,19 +111,19 @@
   --muted: 215 28% 17%;
   --muted-foreground: 215 20% 65%;
 
-  --accent: 258 90% 66%;
-  --accent-foreground: 0 0% 100%;
+  --accent: 73 88% 59%;
+  --accent-foreground: 0 0% 7%;
 
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
 
   --input: 214 32% 91%;
-  --ring: 258 90% 66%;
+  --ring: 73 88% 59%;
   
   /* Chart colors - Greens and Reds */
   --chart-1: 142 71% 45%; /* Green for wins */
   --chart-2: 0 84% 60%; /* Red for losses */
-  --chart-3: 258 90% 66%;
+  --chart-3: 73 88% 59%;
   --chart-4: 43 74% 66%;
   --chart-5: 27 87% 67%;
 
@@ -148,29 +148,29 @@
   --sidebar: 222 47% 11%;
   --sidebar-foreground: 0 0% 100%;
   --sidebar-border: 215 28% 17%;
-  --sidebar-primary: 258 90% 66%;
-  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-primary: 73 88% 59%;
+  --sidebar-primary-foreground: 0 0% 7%;
   --sidebar-accent: 215 28% 17%;
   --sidebar-accent-foreground: 0 0% 100%;
-  --sidebar-ring: 258 90% 66%;
+  --sidebar-ring: 73 88% 59%;
   --popover: 222 47% 11%;
   --popover-foreground: 0 0% 100%;
   --popover-border: 215 28% 17%;
-  --primary: 258 90% 66%;
-  --primary-foreground: 0 0% 100%;
+  --primary: 73 88% 59%;
+  --primary-foreground: 0 0% 7%;
   --secondary: 215 28% 17%;
   --secondary-foreground: 0 0% 100%;
   --muted: 215 28% 17%;
   --muted-foreground: 215 20% 65%;
-  --accent: 258 90% 66%;
-  --accent-foreground: 0 0% 100%;
+  --accent: 73 88% 59%;
+  --accent-foreground: 0 0% 7%;
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
   --input: 215 28% 17%;
-  --ring: 258 90% 66%;
+  --ring: 73 88% 59%;
   --chart-1: 142 71% 45%;
   --chart-2: 0 84% 60%;
-  --chart-3: 258 90% 66%;
+  --chart-3: 73 88% 59%;
   --chart-4: 43 74% 66%;
   --chart-5: 27 87% 67%;
 }

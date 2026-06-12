@@ -79,7 +79,10 @@ export default function TradeLog() {
           <h2 className="text-3xl font-bold tracking-tight text-white">Trade Log</h2>
           <p className="text-white/70 mt-1">Review and manage your trading history.</p>
         </div>
-        <Button onClick={openAddModal} className="bg-primary hover:bg-primary/90 text-white shadow-lg">
+        <Button
+          onClick={openAddModal}
+          className="bg-[#CCF33C] hover:bg-[#BEE52F] text-[#111111] font-semibold rounded-[10px] shadow-lg transition-all hover:-translate-y-[1px]"
+        >
           <Plus className="mr-2 h-4 w-4" /> Add Trade
         </Button>
       </div>

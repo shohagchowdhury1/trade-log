@@ -311,7 +311,7 @@ export function TradeFormModal({ open, onOpenChange, trade }: TradeFormModalProp
               <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={isPending} className="bg-primary text-primary-foreground hover:bg-primary/90">
+              <Button type="submit" disabled={isPending} className="bg-[#CCF33C] hover:bg-[#BEE52F] text-[#111111] font-semibold rounded-[10px] transition-all hover:-translate-y-[1px]">
                 {isPending ? "Saving..." : trade ? "Save Changes" : "Create Trade"}
               </Button>
             </div>
