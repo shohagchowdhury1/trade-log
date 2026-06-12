@@ -4,5 +4,9 @@
   "buildCommand": "pnpm --filter @workspace/trading-journal run build",
   "outputDirectory": "artifacts/trading-journal/dist/public",
   "installCommand": "pnpm install",
-  "devCommand": "pnpm --filter @workspace/trading-journal run dev"
+  "devCommand": "pnpm --filter @workspace/trading-journal run dev",
+  "env": {
+    "PORT": "3000",
+    "BASE_PATH": "/"
+  }
 }

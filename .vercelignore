@@ -1,0 +1,8 @@
+node_modules
+.local
+.cache
+dist
+*.tsbuildinfo
+.pnpm-store
+.git
+attached_assets/*.txt
