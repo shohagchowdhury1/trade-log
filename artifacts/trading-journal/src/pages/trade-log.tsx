@@ -27,7 +27,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { TradeFormModal } from "@/components/trade-form-modal";
-import { Trade } from "@workspace/api-client-react/src/generated/api.schemas";
+import { Trade } from "@workspace/api-client-react";
 
 export default function TradeLog() {
   const queryClient = useQueryClient();

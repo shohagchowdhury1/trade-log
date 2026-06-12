@@ -1,3 +1,5 @@
+import type { Trade, TradeInput } from "./generated/api.schemas";
+
 export type CustomFetchOptions = RequestInit & {
   responseType?: "json" | "text" | "blob" | "auto";
 };
@@ -322,14 +324,214 @@ async function parseSuccessBody(
   }
 }
 
+// ---------------------------------------------------------------------------
+// Browser-local API fallback (uses localStorage when no remote API is configured)
+// ---------------------------------------------------------------------------
+
+const LOCAL_TRADES_KEY = "trade-log-trades";
+
+function resolveLocalUrl(input: RequestInfo | URL): string | null {
+  if (typeof window === "undefined") return null;
+  const url = resolveUrl(input);
+  if (!url.startsWith("/api/")) return null;
+  return url;
+}
+
+function loadTrades(): Trade[] {
+  try {
+    const raw = window.localStorage.getItem(LOCAL_TRADES_KEY);
+    return raw ? (JSON.parse(raw) as Trade[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveTrades(trades: Trade[]): void {
+  window.localStorage.setItem(LOCAL_TRADES_KEY, JSON.stringify(trades));
+}
+
+function computeTradeFields(
+  input: TradeInput,
+): Pick<Trade, "netPnl" | "rr" | "result"> {
+  const { entryPrice, exitPrice, stopLoss, shares, side } = input;
+  const netPnl =
+    side === "Long"
+      ? (exitPrice - entryPrice) * shares
+      : (entryPrice - exitPrice) * shares;
+  const result = netPnl >= 0 ? "Win" : "Loss";
+  const risk = Math.abs(entryPrice - stopLoss);
+  const rr = risk > 0 ? Math.abs(exitPrice - entryPrice) / risk : 0;
+  return { netPnl, rr, result };
+}
+
+function buildLocalResponse(data: unknown, status = 200): Response {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { "content-type": "application/json" },
+  });
+}
+
+function buildLocalErrorResponse(message: string, status = 400): Response {
+  return new Response(JSON.stringify({ message }), {
+    status,
+    headers: { "content-type": "application/json" },
+  });
+}
+
+async function handleLocalApiRequest(
+  url: string,
+  method: string,
+  body: string | undefined,
+): Promise<Response | null> {
+  if (url === "/api/healthz") {
+    return buildLocalResponse({ status: "ok" });
+  }
+
+  if (url === "/api/trades" && method === "GET") {
+    const parsed = new URL(url, window.location.origin);
+    const search = parsed.searchParams.get("search")?.toLowerCase() || "";
+    const side = parsed.searchParams.get("side");
+    const result = parsed.searchParams.get("result");
+    const sortOrder = parsed.searchParams.get("sortOrder") || "desc";
+
+    let trades = loadTrades();
+
+    if (search) {
+      trades = trades.filter((t) => t.ticker.toLowerCase().includes(search));
+    }
+    if (side) {
+      trades = trades.filter((t) => t.side === side);
+    }
+    if (result) {
+      trades = trades.filter((t) => t.result === result);
+    }
+
+    trades.sort((a, b) => {
+      const da = new Date(a.date).getTime();
+      const db = new Date(b.date).getTime();
+      return sortOrder === "asc" ? da - db : db - da;
+    });
+
+    return buildLocalResponse(trades);
+  }
+
+  if (url === "/api/trades" && method === "POST") {
+    const data = body ? (JSON.parse(body) as TradeInput) : ({} as TradeInput);
+    const trades = loadTrades();
+    const now = new Date().toISOString();
+    const newTrade: Trade = {
+      ...data,
+      id: Date.now(),
+      createdAt: now,
+      ...computeTradeFields(data),
+    };
+    trades.push(newTrade);
+    saveTrades(trades);
+    return buildLocalResponse(newTrade, 201);
+  }
+
+  if (url === "/api/trades/stats" && method === "GET") {
+    const trades = loadTrades();
+    const totalTrades = trades.length;
+    const wins = trades.filter((t) => t.result === "Win").length;
+    const losses = totalTrades - wins;
+    const winRate = totalTrades > 0 ? (wins / totalTrades) * 100 : 0;
+    const netPnl = trades.reduce((sum, t) => sum + t.netPnl, 0);
+    const grossProfit = trades
+      .filter((t) => t.netPnl > 0)
+      .reduce((sum, t) => sum + t.netPnl, 0);
+    const grossLoss = trades
+      .filter((t) => t.netPnl < 0)
+      .reduce((sum, t) => sum + t.netPnl, 0);
+    const profitFactor =
+      grossLoss !== 0
+        ? grossProfit / Math.abs(grossLoss)
+        : grossProfit > 0
+          ? Infinity
+          : 0;
+
+    const pnlByTrade = trades.map((t, idx) => ({
+      tradeNumber: idx + 1,
+      pnl: t.netPnl,
+      result: t.result,
+      ticker: t.ticker,
+      date: t.date,
+    }));
+
+    return buildLocalResponse({
+      totalTrades,
+      winRate,
+      netPnl,
+      profitFactor,
+      wins,
+      losses,
+      pnlByTrade,
+    });
+  }
+
+  const updateMatch = url.match(/^\/api\/trades\/(\d+)$/);
+  if (updateMatch && method === "PUT") {
+    const id = Number(updateMatch[1]);
+    const data = body ? (JSON.parse(body) as TradeInput) : ({} as TradeInput);
+    const trades = loadTrades();
+    const index = trades.findIndex((t) => t.id === id);
+    if (index === -1) {
+      return buildLocalErrorResponse("Trade not found", 404);
+    }
+    trades[index] = {
+      ...trades[index],
+      ...data,
+      id,
+      ...computeTradeFields(data),
+    };
+    saveTrades(trades);
+    return buildLocalResponse(trades[index]);
+  }
+
+  if (updateMatch && method === "DELETE") {
+    const id = Number(updateMatch[1]);
+    const trades = loadTrades();
+    const index = trades.findIndex((t) => t.id === id);
+    if (index === -1) {
+      return buildLocalErrorResponse("Trade not found", 404);
+    }
+    trades.splice(index, 1);
+    saveTrades(trades);
+    return buildLocalResponse({ success: true });
+  }
+
+  return null;
+}
+
 export async function customFetch<T = unknown>(
   input: RequestInfo | URL,
   options: CustomFetchOptions = {},
 ): Promise<T> {
-  input = applyBaseUrl(input);
+  const localUrl = resolveLocalUrl(input);
   const { responseType = "auto", headers: headersInit, ...init } = options;
-
   const method = resolveMethod(input, init.method);
+
+  if (localUrl) {
+    const localResponse = await handleLocalApiRequest(
+      localUrl,
+      method,
+      typeof init.body === "string" ? init.body : undefined,
+    );
+    if (localResponse) {
+      const requestInfo = { method, url: localUrl };
+      if (!localResponse.ok) {
+        const errorData = await parseErrorBody(localResponse, method);
+        throw new ApiError(localResponse, errorData, requestInfo);
+      }
+      return (await parseSuccessBody(
+        localResponse,
+        responseType,
+        requestInfo,
+      )) as T;
+    }
+  }
+
+  input = applyBaseUrl(input);
 
   if (init.body != null && (method === "GET" || method === "HEAD")) {
     throw new TypeError(`customFetch: ${method} requests cannot have a body.`);

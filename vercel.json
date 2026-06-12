@@ -8,5 +8,11 @@
   "env": {
     "PORT": "3000",
     "BASE_PATH": "/"
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/((?!api/|assets/|favicon\\.svg|robots\\.txt|sitemap\\.xml).+)",
+      "destination": "/index.html"
+    }
+  ]
 }

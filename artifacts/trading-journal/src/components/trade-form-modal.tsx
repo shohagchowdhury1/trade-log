@@ -5,7 +5,7 @@ import * as z from "zod";
 import { format } from "date-fns";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCreateTrade, useUpdateTrade, getListTradesQueryKey, getGetTradeStatsQueryKey } from "@workspace/api-client-react";
-import { Trade } from "@workspace/api-client-react/src/generated/api.schemas";
+import { Trade } from "@workspace/api-client-react";
 
 import {
   Dialog,
