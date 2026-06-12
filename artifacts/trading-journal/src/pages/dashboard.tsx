@@ -90,7 +90,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-card-foreground">
-              {stats.profitFactor === Infinity ? "∞" : stats.profitFactor.toFixed(2)}
+              {Number.isFinite(stats.profitFactor) ? stats.profitFactor.toFixed(2) : "∞"}
             </div>
           </CardContent>
         </Card>
