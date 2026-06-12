@@ -383,16 +383,18 @@ async function handleLocalApiRequest(
   method: string,
   body: string | undefined,
 ): Promise<Response | null> {
-  if (url === "/api/healthz") {
+  const parsedUrl = new URL(url, window.location.origin);
+  const pathname = parsedUrl.pathname;
+
+  if (pathname === "/api/healthz") {
     return buildLocalResponse({ status: "ok" });
   }
 
-  if (url === "/api/trades" && method === "GET") {
-    const parsed = new URL(url, window.location.origin);
-    const search = parsed.searchParams.get("search")?.toLowerCase() || "";
-    const side = parsed.searchParams.get("side");
-    const result = parsed.searchParams.get("result");
-    const sortOrder = parsed.searchParams.get("sortOrder") || "desc";
+  if (pathname === "/api/trades" && method === "GET") {
+    const search = parsedUrl.searchParams.get("search")?.toLowerCase() || "";
+    const side = parsedUrl.searchParams.get("side");
+    const result = parsedUrl.searchParams.get("result");
+    const sortOrder = parsedUrl.searchParams.get("sortOrder") || "desc";
 
     let trades = loadTrades();
 
@@ -415,7 +417,7 @@ async function handleLocalApiRequest(
     return buildLocalResponse(trades);
   }
 
-  if (url === "/api/trades" && method === "POST") {
+  if (pathname === "/api/trades" && method === "POST") {
     const data = body ? (JSON.parse(body) as TradeInput) : ({} as TradeInput);
     const trades = loadTrades();
     const now = new Date().toISOString();
@@ -430,7 +432,7 @@ async function handleLocalApiRequest(
     return buildLocalResponse(newTrade, 201);
   }
 
-  if (url === "/api/trades/stats" && method === "GET") {
+  if (pathname === "/api/trades/stats" && method === "GET") {
     const trades = loadTrades();
     const totalTrades = trades.length;
     const wins = trades.filter((t) => t.result === "Win").length;
@@ -469,7 +471,7 @@ async function handleLocalApiRequest(
     });
   }
 
-  const updateMatch = url.match(/^\/api\/trades\/(\d+)$/);
+  const updateMatch = pathname.match(/^\/api\/trades\/(\d+)$/);
   if (updateMatch && method === "PUT") {
     const id = Number(updateMatch[1]);
     const data = body ? (JSON.parse(body) as TradeInput) : ({} as TradeInput);
