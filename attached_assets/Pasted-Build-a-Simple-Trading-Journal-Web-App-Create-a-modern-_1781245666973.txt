@@ -1,0 +1,222 @@
+Build a Simple Trading Journal Web App
+
+Create a modern trading journal web application inspired by TradeZella.
+
+Core Requirement
+
+I only need 2 sections:
+
+1. Trade Log
+2. Dashboard
+
+No user authentication.
+No subscriptions.
+No payment system.
+No broker integration.
+No API connections.
+
+Everything should be stored locally using a database.
+
+Tech Stack
+Frontend: React + TypeScript
+Backend: Node.js + Express
+Database: SQLite
+Charts: Recharts
+Styling: Tailwind CSS
+Fully responsive (desktop + mobile)
+FEATURE 1: TRADE LOG
+
+Create a table exactly like TradeZella.
+
+Columns:
+
+Date
+Ticker
+Side (Long/Short)
+Strategy
+Entry Price
+Exit Price
+Stop Loss
+Shares
+Net P&L
+R:R
+Result (Win/Loss)
+Trade Form
+
+Add a button:
+
+"Add Trade"
+
+When clicked open a modal.
+
+Fields:
+
+Date
+Ticker
+Side
+Strategy
+Entry Price
+Exit Price
+Stop Loss
+Shares
+Notes (optional)
+Automatic Calculations
+
+Net P&L:
+
+For Long:
+((Exit - Entry) × Shares)
+
+For Short:
+((Entry - Exit) × Shares)
+
+Result:
+
+If P&L > 0 = Win
+
+If P&L < 0 = Loss
+
+R:R Calculation:
+
+Reward = abs(Exit - Entry)
+
+Risk = abs(Entry - Stop Loss)
+
+R:R = Reward / Risk
+
+Round to 2 decimals.
+
+Additional Functions
+Edit Trade
+Delete Trade
+Search by ticker
+Filter by:
+Long
+Short
+Win
+Loss
+Sort by date
+FEATURE 2: DASHBOARD
+
+Create a professional dashboard.
+
+Top Stats Cards:
+
+Total Trades
+
+Example:
+20
+
+Win Rate
+
+Formula:
+
+(Number of Winning Trades / Total Trades) × 100
+
+Example:
+64%
+
+Net P&L
+
+Sum of all trade P&L
+
+Example:
++$1,847
+
+Profit Factor
+
+Formula:
+
+Gross Profit / Gross Loss
+
+Example:
+1.82
+
+CHARTS
+Chart 1: P&L Per Trade
+
+Bar chart.
+
+Green bars = profitable trades
+Red bars = losing trades
+
+X-axis:
+Trade Number
+
+Y-axis:
+Profit/Loss
+
+Chart 2: Win/Loss Breakdown
+
+Donut Chart
+
+Show:
+
+Wins
+Losses
+Win Percentage in center
+
+Example:
+
+Wins: 13
+Losses: 7
+Win Rate: 64%
+
+UI DESIGN
+
+Match the clean TradeZella style.
+
+Requirements:
+
+White background
+Light gray cards
+Purple accent color
+Rounded corners
+Professional trading dashboard look
+Smooth hover animations
+Mobile responsive
+Database Schema
+
+Trades Table:
+
+id
+date
+ticker
+side
+strategy
+entry_price
+exit_price
+stop_loss
+shares
+notes
+net_pnl
+rr
+result
+created_at
+
+Seed Data
+
+Generate 20 sample trades automatically when the app first runs.
+
+Navigation
+
+Two Tabs:
+
+Trade Log
+Dashboard
+
+Dashboard updates automatically whenever a trade is added, edited, or deleted.
+
+Final Deliverable
+
+Build the complete working application with:
+
+Frontend
+Backend
+SQLite database
+CRUD operations
+Dashboard analytics
+Charts
+Responsive UI
+
+The application should be production-ready and runnable in Replit with one-click start.

@@ -3,13 +3,15 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Trading Journal API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: trades
+    description: Trade operations
 paths:
   /healthz:
     get:
@@ -24,6 +26,127 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /trades:
+    get:
+      operationId: listTrades
+      tags: [trades]
+      summary: List all trades
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: side
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [Long, Short]
+        - name: result
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [Win, Loss]
+        - name: sortOrder
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+      responses:
+        "200":
+          description: List of trades
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Trade"
+    post:
+      operationId: createTrade
+      tags: [trades]
+      summary: Create a new trade
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TradeInput"
+      responses:
+        "201":
+          description: Trade created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Trade"
+        "400":
+          description: Bad request
+
+  /trades/stats:
+    get:
+      operationId: getTradeStats
+      tags: [trades]
+      summary: Get dashboard statistics
+      responses:
+        "200":
+          description: Dashboard stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TradeStats"
+
+  /trades/{id}:
+    put:
+      operationId: updateTrade
+      tags: [trades]
+      summary: Update a trade
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TradeInput"
+      responses:
+        "200":
+          description: Trade updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Trade"
+        "404":
+          description: Trade not found
+    delete:
+      operationId: deleteTrade
+      tags: [trades]
+      summary: Delete a trade
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Trade deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                required:
+                  - success
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +157,129 @@ components:
       required:
         - status
 
+    Trade:
+      type: object
+      required:
+        - id
+        - date
+        - ticker
+        - side
+        - entryPrice
+        - exitPrice
+        - stopLoss
+        - shares
+        - netPnl
+        - rr
+        - result
+        - createdAt
+      properties:
+        id:
+          type: integer
+        date:
+          type: string
+        ticker:
+          type: string
+        side:
+          type: string
+          enum: [Long, Short]
+        strategy:
+          type: ["string", "null"]
+        entryPrice:
+          type: number
+        exitPrice:
+          type: number
+        stopLoss:
+          type: number
+        shares:
+          type: integer
+        notes:
+          type: ["string", "null"]
+        netPnl:
+          type: number
+        rr:
+          type: number
+        result:
+          type: string
+          enum: [Win, Loss]
+        createdAt:
+          type: string
+
+    TradeInput:
+      type: object
+      required:
+        - date
+        - ticker
+        - side
+        - entryPrice
+        - exitPrice
+        - stopLoss
+        - shares
+      properties:
+        date:
+          type: string
+        ticker:
+          type: string
+        side:
+          type: string
+          enum: [Long, Short]
+        strategy:
+          type: string
+        entryPrice:
+          type: number
+        exitPrice:
+          type: number
+        stopLoss:
+          type: number
+        shares:
+          type: integer
+        notes:
+          type: string
+
+    TradeStats:
+      type: object
+      required:
+        - totalTrades
+        - winRate
+        - netPnl
+        - profitFactor
+        - wins
+        - losses
+        - pnlByTrade
+      properties:
+        totalTrades:
+          type: integer
+        winRate:
+          type: number
+        netPnl:
+          type: number
+        profitFactor:
+          type: number
+        wins:
+          type: integer
+        losses:
+          type: integer
+        pnlByTrade:
+          type: array
+          items:
+            $ref: "#/components/schemas/PnlPoint"
+
+    PnlPoint:
+      type: object
+      required:
+        - tradeNumber
+        - pnl
+        - result
+        - ticker
+        - date
+      properties:
+        tradeNumber:
+          type: integer
+        pnl:
+          type: number
+        result:
+          type: string
+          enum: [Win, Loss]
+        ticker:
+          type: string
+        date:
+          type: string
